@@ -48,7 +48,7 @@ app_ui = ui.page_navbar(
     ),
     ui.nav(ui.a("About", href="https://github.com/umams2002")),
     ui.nav(ui.a("GitHub", href="https://github.com/umams2002/Uma-NW-05-liveupdates")),
-    ui.nav(ui.a("App", href="https://denisecase.shinyapps.io/cintel-05-live-updates/")),
+    ui.nav(ui.a("App", href="https://umams2002.shinyapps.io/Uma-NW-05-liveupdates/")),
     ui.nav(ui.a("Plotly Express", href="https://plotly.com/python/line-and-scatter/")),
     ui.nav(ui.a("WeatherAPI", href="https://openweathermap.org/api")),
     ui.nav(ui.a("OneCallAPI", href="https://openweathermap.org/api/one-call-3")),
