@@ -22,6 +22,7 @@ from mtcars_server import get_mtcars_server_functions
 from mtcars_ui_inputs import get_mtcars_inputs
 from mtcars_ui_outputs import get_mtcars_outputs
 from util_logger import setup_logger
+from continuous_stock import update_csv_stock
 
 # Set up a logger for this file (see the logs folder to help with debugging).
 logger, logname = setup_logger(__file__)
@@ -34,6 +35,13 @@ async def update_csv_files():
     while True:
         logger.info("Calling continuous updates ...")
         task1 = asyncio.create_task(update_csv_location())
+        await asyncio.gather(task1)
+        await asyncio.sleep(60)  # wait for 60 seconds
+      
+async def update_stock_csv_files():
+    while True:
+        logger.info("Calling continuous updates ...")
+        task1 = asyncio.create_task(update_csv_stock())
         await asyncio.gather(task1)
         await asyncio.sleep(60)  # wait for 60 seconds
 
@@ -67,6 +75,7 @@ def server(input, output, session):
 
     # Kick off continuous updates when the app starts
     asyncio.create_task(update_csv_files())
+    asyncio.create_task(update_stock_csv_files())
     logger.info("Starting continuous updates ...")
 
     get_mtcars_server_functions(input, output, session)
