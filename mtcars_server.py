@@ -59,6 +59,8 @@ def get_mtcars_server_functions(input, output, session):
 
     reactive_location = reactive.Value("ELY MN")
 
+    reactive_stock = reactive.Value("TSLA")
+
     # Previously, we had a single reactive dataframe to hold filtered results
     reactive_df = reactive.Value()
 
@@ -155,12 +157,28 @@ def get_mtcars_server_functions(input, output, session):
         df = get_mtcars_temp_df()
         logger.info(f"init reactive_temp_df len: {len(df)}")
 
+    @reactive.Effect
+    @reactive.event(input.MTCARS_STOCKS_SELECT)
+    def _():
+        """Set two reactive values (the stocks and price df) when user changes company"""
+        reactive_stock.set(input.MTCARS_STOCKS_SELECT())
+        df = get_mtcars_stock_df()
+        logger.info(f"init reative_stocks_df len: {len(df)}")
+       
+
     @reactive.file_reader(str(csv_locations))
     def get_mtcars_temp_df():
         """Return mtcars temperatures pandas Dataframe."""
         logger.info(f"READING df from {csv_locations}")
         df = pd.read_csv(csv_locations)
         logger.info(f"READING df len {len(df)}")
+        return df
+    
+    @reactive.file_reader(str(csv_stocks))
+    def get_mtcars_stock_df():
+        logger.info(f"Reading df from {csv_stocks} ")
+        df=pd.read_csv(csv_stocks)
+        logger.info(f"Reading df len {len(df)}")
         return df
 
     @output
@@ -184,6 +202,14 @@ def get_mtcars_server_functions(input, output, session):
         df_location = df[df["Location"] == reactive_location.get()]
         logger.info(f"Rendering TEMP table with {len(df_location)} rows")
         return df_location
+    
+    @output
+    @render.table
+    def mtcars_stocks_table():
+        df = get_mtcars_stock_df()
+        df_stock = df[df["Ticker"] == reactive_stock.get()]
+        logger.info(f"Rendering Stock table with {len(df_stock)} rows")
+        return df_stock
 
     @output
     @render_widget
@@ -198,6 +224,17 @@ def get_mtcars_server_functions(input, output, session):
         plotly_express_plot.update_layout(title="Continuous Temperature (F)")
         return plotly_express_plot
 
+    @output
+    @render_widget
+    def mtcars_stocks_chart():
+        df = get_mtcars_stock_df()
+        df_stock = df[df["Ticker"] == reactive_stock.get()]
+        logger.info(f"Rendering Stocks chart with {len(df_stock)} dollars")
+        plotly_express_plot = px.line(
+            df_stock, x="Time", y="Price", color="Ticker", markers=True
+        )
+        plotly_express_plot.update_layout(title="Continuous Stock ($)")
+        return plotly_express_plot
     ###############################################################
 
     # return a list of function names for use in reactive outputs
@@ -212,6 +249,7 @@ def get_mtcars_server_functions(input, output, session):
         mtcars_location_string,
         mtcars_location_table,
         mtcars_location_chart,
+        mtcars_stocks_chart,
     ]
 
 

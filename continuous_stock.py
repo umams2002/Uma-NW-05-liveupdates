@@ -25,8 +25,8 @@ def lookup_ticker(company):
 
 async def get_stock_price(ticker):
   logger.info("Calling get_stock_price for {ticker}}")
-  #stock = yf.Ticker(ticker) # Get the stock data
-  #price = stock.history(period="1d").tail(1)["Close"][0] # Get the closing price
+ # stock = yf.Ticker(ticker) # Get the stock data
+ # price = stock.history(period="1d").tail(1)["Close"][0] # Get the closing price
   price = randint(132, 148) 
   return price
 
@@ -45,10 +45,10 @@ async def update_csv_stock():
     
         # Stub: Create a simple DataFrame with static data
         df_data = pd.DataFrame({
-            "Company": ["Tesla Inc", "General Motors Company"],
-            "Ticker": ["TSLA", "GM"],
-            "Time": ["2023-07-25 12:00:00", "2023-07-25 12:01:00"],
-            "Price": [700.0, 60.0]
+            "Company": ["Tesla Inc", "General Motors Company", "Ford"],
+            "Ticker": ["TSLA", "GM", "F"],
+            "Time": ["2023-07-25 09:00:00", "2023-07-25 09:01:00","2023-07-25 09:01:00"],
+            "Price": [700.0, 60.0,120.0]
         })
 
         # Save stock prices to the CSV file
