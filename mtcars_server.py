@@ -210,6 +210,19 @@ def get_mtcars_server_functions(input, output, session):
         df_stock = df[df["Ticker"] == reactive_stock.get()]
         logger.info(f"Rendering Stock table with {len(df_stock)} rows")
         return df_stock
+    
+    @output
+    @render.text
+    def mtcars_stocks_string():
+        selected = reactive_stock.get()
+        line1 = f"Current stock price for {selected}."
+        line2 = "Updated once per minute for 15 minutes."
+        line3 = "keep the most recent 10 minutes of data."
+        new_message = f"{line1}\n{line2}\n{line3}"
+        logger.info(f"{new_message}")
+        return new_message
+    
+    
 
     @output
     @render_widget
@@ -250,6 +263,8 @@ def get_mtcars_server_functions(input, output, session):
         mtcars_location_table,
         mtcars_location_chart,
         mtcars_stocks_chart,
+        mtcars_stocks_table,
+        mtcars_stocks_string,
     ]
 
 
