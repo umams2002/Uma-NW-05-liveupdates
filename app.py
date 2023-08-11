@@ -23,6 +23,10 @@ from mtcars_ui_inputs import get_mtcars_inputs
 from mtcars_ui_outputs import get_mtcars_outputs
 from util_logger import setup_logger
 from continuous_stock import update_csv_stock
+from fruits_ui_inputs import get_fruits_inputs
+from fruits_ui_outputs import get_fruits_outputs
+from continuous_fruit import update_csv_fruit
+from fruits_server import get_fruits_server_function
 
 # Set up a logger for this file (see the logs folder to help with debugging).
 logger, logname = setup_logger(__file__)
@@ -45,6 +49,13 @@ async def update_stock_csv_files():
         await asyncio.gather(task1)
         await asyncio.sleep(60)  # wait for 60 seconds
 
+async def update_fruits_csv_files():
+    while True:
+        logger.info("Calling continuous updates...")
+        task1 = asyncio.create_task(update_csv_fruit())
+        await asyncio.gather(task1)
+        await asyncio.sleep(60) # wait for 60 seconds
+
 app_ui = ui.page_navbar(
     shinyswatch.theme.lumen(),
     ui.nav(
@@ -52,6 +63,13 @@ app_ui = ui.page_navbar(
         ui.layout_sidebar(
             get_mtcars_inputs(),
             get_mtcars_outputs(),
+        ),
+    ),
+    ui.nav(
+        "Fruits Nutrition",
+        ui.layout_sidebar(
+            get_fruits_inputs(),
+            get_fruits_outputs(),
         ),
     ),
     ui.nav(ui.a("About", href="https://github.com/umams2002")),
@@ -76,9 +94,11 @@ def server(input, output, session):
     # Kick off continuous updates when the app starts
     asyncio.create_task(update_csv_files())
     asyncio.create_task(update_stock_csv_files())
+    asyncio.create_task(update_fruits_csv_files())
     logger.info("Starting continuous updates ...")
 
-    get_mtcars_server_functions(input, output, session)
-
+    get_mtcars_server_functions(input,output, session)
+    get_fruits_server_function(input, output, session)
+    
 
 app = App(app_ui, server, debug=True)
